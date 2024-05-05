@@ -20,6 +20,12 @@ public class Game1 : Game
     private int paddleSpeed = 5;
     private int ballSpeed = 5; 
     private int player;
+    private int ballvx; 
+    private int ballvy;
+    private bool initial;
+    private int dx; 
+    private int dy;
+    private int colAngle; 
 
     public Game1()
     {
@@ -28,6 +34,7 @@ public class Game1 : Game
         IsMouseVisible = true;
         var rand = new Random(); 
          player = rand.Next(1,3);
+        initial = true; 
     }
 
     protected override void Initialize()
@@ -57,13 +64,12 @@ public class Game1 : Game
             Exit();
 
         // TODO: Add your update logic here
-        Boolean initial = true; 
         if(player == 1 && initial){
-            ballRect.X -= ballSpeed;
+            ballvx -= ballSpeed;
             initial = false;
         }
         else if(player == 2 && initial){
-            ballRect.X += ballSpeed;
+            ballvx -= ballSpeed;
             initial = false; 
         }
         KeyboardState keyboard = Keyboard.GetState();
@@ -79,9 +85,25 @@ public class Game1 : Game
         else if(keyboard.IsKeyDown(Keys.Down)){
             paddleRect2.Y += paddleSpeed; 
         }
-
-        if(ballRect.Intersects(paddleRect1) || ballRect.Intersects(paddleRect2)){
-            ballSpeed = -ballSpeed; 
+        ballRect.X += ballvx;
+        ballRect.Y += ballvy;
+        if(ballRect.Intersects(paddleRect1)){
+            dx = paddleRect1.X - ballRect.X; 
+            dy = paddleRect1.Y - ballRect.Y;
+            colAngle = (int)Math.Atan2(dy,dx); 
+            ballvx = (int) (ballSpeed * Math.Cos(colAngle));
+            ballvy = (int) (ballSpeed * Math.Sin(colAngle));
+            Console.WriteLine(Math.Sin(colAngle));
+            Console.WriteLine("Collison!");
+        }
+        if(ballRect.Intersects(paddleRect2)){
+            dx = paddleRect2.X - ballRect.X; 
+            dy = paddleRect2.Y - ballRect.Y;
+            colAngle = (int)Math.Atan2(dy,dx); 
+            ballvx = (int) (-ballSpeed * Math.Cos(colAngle));
+            ballvy = (int) (-ballSpeed * Math.Sin(colAngle));
+            Console.WriteLine(Math.Sin(colAngle));
+            Console.WriteLine("Collison!");
         }
         base.Update(gameTime);
     }
